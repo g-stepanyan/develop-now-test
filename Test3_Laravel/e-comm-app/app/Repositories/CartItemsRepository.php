@@ -12,23 +12,21 @@ class CartItemsRepository implements MainInterface
         return CartItem::all();
     }
 
-    public function getById($id)
+    public function storeOrUpdate($data, $id = null)
     {
-        return CartItem::findOrFail($id);
+        $cartItem = is_null($id) ? new CartItem() : CartItem::find($id);
+
+        if (isset($data['product_id'])) {
+            $cartItem->product_id = $data['product_id'];
+
+            $cartItem->save();
+        }
+
+        return CartItem::with(['products'])->findOrFail($cartItem->id);
     }
 
     public function delete($id)
     {
         CartItem::destroy($id);
-    }
-
-    public function create(array $data)
-    {
-        return CartItem::create($data);
-    }
-
-    public function update($id, array $data)
-    {
-        return CartItem::whereId($id)->update($data);
     }
 }

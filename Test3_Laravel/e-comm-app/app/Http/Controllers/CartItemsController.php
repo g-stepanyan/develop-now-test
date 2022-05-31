@@ -21,9 +21,13 @@ class CartItemsController extends AppController
      */
     public function store(Request $request)
     {
-        $data = $request->only(['name', 'price', 'image']);
+        $request->validate([
+            'product_id' => 'required|numeric|exists:products,id',
+        ]);
 
-        return response()->json(['data' => $this->repository->create($data)], Response::HTTP_CREATED);
+        $data = $request->only(['product_id']);
+
+        return response()->json(['data' => $this->repository->storeOrUpdate($data)], Response::HTTP_CREATED);
     }
 
     /**
@@ -35,10 +39,14 @@ class CartItemsController extends AppController
      */
     public function update(Request $request, $id)
     {
-        $data = $request->only(['name', 'price', 'image']);
+        $request->validate([
+            'product_id' => 'numeric|exists:products,id',
+        ]);
+
+        $data = $request->only(['product_id']);
 
         return response()->json([
-            'data' => $this->repository->update($id, $data)
+            'data' => $this->repository->storeOrUpdate($data, $id)
         ]);
     }
 }

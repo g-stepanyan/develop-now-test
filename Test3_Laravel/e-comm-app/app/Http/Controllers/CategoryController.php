@@ -21,6 +21,10 @@ class CategoryController extends AppController
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'name' => 'required|unique:categories'
+        ]);
+
         $data = $request->only(['name']);
 
         return response()->json(['data' => $this->repository->storeOrUpdate($data)], Response::HTTP_CREATED);

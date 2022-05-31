@@ -21,10 +21,15 @@ class ProductController extends AppController
      */
     public function store(Request $request)
     {
-//        dd($request->all());
+        $request->validate([
+            'name' => 'required',
+            'price' => 'numeric|min:0',
+            'category_id' => 'required|numeric|exists:categories,id',
+        ]);
+
         $data = $request->only(['name', 'price', 'image', 'category_id']);
 
-        return response()->json(['data' => $this->repository->create($data)], Response::HTTP_CREATED);
+        return response()->json(['data' => $this->repository->storeOrUpdate($data)], Response::HTTP_CREATED);
     }
 
     /**
@@ -36,10 +41,15 @@ class ProductController extends AppController
      */
     public function update(Request $request, $id)
     {
-        $data = $request->only(['name', 'price', 'image']);
+        $request->validate([
+            'price' => 'numeric|min:0',
+            'category_id' => 'numeric|exists:categories,id',
+        ]);
+
+        $data = $request->only(['name', 'price', 'image', 'category_id']);
 
         return response()->json([
-            'data' => $this->repository->update($id, $data)
+            'data' => $this->repository->storeOrUpdate($data, $id)
         ]);
     }
 }
